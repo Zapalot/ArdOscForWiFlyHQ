@@ -1,0 +1,27 @@
+An OSC library for Arduino using the WiFly RN-XV Wifi Module.
+
+for Arduino firmware 1.0rc-1
+
+Tested with the WiFly RN-XV from Roving Networks.
+Depends on my branch of the WiFlyHQ library for wifi communication.
+
+Installation
+ArdOSC folder into ..
+
+Mac
+~/Documents/Arduino/libraries/
+
+Win
+MyDocuments\Arduino\libraries\
+
+http://www.arduino.cc/en/Hacking/Libraries
+
+
+===================================================
+
+ ArdOSCForWiFlyHq 1.0  - OSC Library for Arduino.
+ 
+ 2012/07/30	version 1.0	Based on ArdOSC version 2.1 by recotana (Thanks a lot for you work!).
+						Added OscMessageSink Class for an object-oriented alternative to callback functions. Each sink registered to an OSC Server will receive all incoming messages.
+ 
+ 
