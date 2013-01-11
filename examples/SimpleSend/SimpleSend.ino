@@ -17,6 +17,7 @@ float globalFloatValue=1000;
 char* globalString="foo";
 void setup()
 { 
+  Serial.begin(115200);
   //use the convenient setup. Replace <HardwareSerial> by <SoftwareSerial> if you use one.
   wifly.setupForUDP<HardwareSerial>(
     &Serial3,   //the serial you want to use (this can also be a software serial)
@@ -39,16 +40,21 @@ void setup()
 void loop()
 {
   //note that the destination adress is set by setting the remote host of the wifly!  
-  //two ways of sending messages...
+  //three ways of sending messages...
+  
+  //simple but not as flexible: the convenience functions:
+  client.sendInt(analogRead(A0),"/ard/A0Value");
+  client.sendFloat((float)analogRead(A1)*5.0/255.0,"/ard/A1Voltage");
 
-  //using a local message object and measurements
+  //using a local message object allows to multiple additional parameters in a singel message:
   //loacal_mes,str is release by out of scope
   OSCMessage loacal_mes;
-  loacal_mes.beginMessage("/ard/A0Value");
-  loacal_mes.addArgInt32(analogRead(A0));
+  loacal_mes.beginMessage("/ard/A2A3Value");
+  loacal_mes.addArgInt32(analogRead(A2));
+  loacal_mes.addArgInt32(analogRead(A3));
   client.send(&loacal_mes);
   
-  //using a global message object and some global variables
+  //using a global message object and some global variables works as well
   global_mes.beginMessage("/ard/status");
   global_mes.addArgInt32(globalIntValue);
   global_mes.addArgFloat(globalFloatValue);
@@ -56,7 +62,7 @@ void loop()
 
   client.send(&global_mes);
   global_mes.flush(); //object data clear
-  delay(800);
+
   
   globalIntValue++;
   globalFloatValue*=0.999;

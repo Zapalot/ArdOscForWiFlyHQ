@@ -22,7 +22,8 @@
 OSCClient::OSCClient(WiFly* wiFly):
 wiFly(wiFly)
 {
-
+	wiFlyTimeoutMillis=3; //used to make sure that each package is flushed induvidually
+	lastSendMillis=0;
 }
 
 
@@ -52,10 +53,26 @@ int OSCClient::send(OSCMessage *_message)
       return -2;
     }
 
+	while(millis()-lastSendMillis<wiFlyTimeoutMillis){
+		if(lastSendMillis>millis())lastSendMillis=millis(); //be prepared for millis() overflow...
+	}; //wait until last package is flushed
     wiFly->write(sendData, msgSize);
     wiFly->flush();
-	delay(2);	//wait for the wifly to time out...
     free(sendData);
-
+	lastSendMillis=millis();
     return result;
+}
+
+int OSCClient::sendInt(int value, char* adress){
+  OSCMessage loacal_mes;
+  loacal_mes.beginMessage(adress);
+  loacal_mes.addArgInt32(value);
+  return(this->send(&loacal_mes));
+}
+
+int OSCClient::sendFloat(float value, char* adress){
+  OSCMessage loacal_mes;
+  loacal_mes.beginMessage(adress);
+  loacal_mes.addArgFloat(value);
+  return(this->send(&loacal_mes));
 }
