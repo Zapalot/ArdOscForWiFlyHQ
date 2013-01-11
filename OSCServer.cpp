@@ -31,7 +31,9 @@ OSCServer::~OSCServer(void)
 
 
 
-int OSCServer::availableCheck(void)
+int OSCServer::availableCheck(
+int timeOut	//adjust the timeout to your Baudrate for best performance.
+)
 {
 
     if( wiFly->available() == 0 )
@@ -43,7 +45,7 @@ int OSCServer::availableCheck(void)
 
     //get max receive data
 	//Serial.println("reading data from wifly...");delay(10);
-    wiFly->readBufTimeout(_rcvData, kMaxRecieveData,2); 
+    wiFly->readBufTimeout(_rcvData, kMaxRecieveData,timeOut); 
 	
 	//Serial.println(_rcvData);
     //clear input buffer

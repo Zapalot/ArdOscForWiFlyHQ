@@ -41,7 +41,12 @@ public:
     OSCServer(WiFly* wiFly);
     ~OSCServer(void);
     
-    int availableCheck(void);
+    int availableCheck(
+		int timeOut=1//adjust the timeout to your Baudrate for best performance.
+		//recommended values are:
+		//9600 baud: 3ms
+		//115200 baud: 1ms
+	);
 
     //_adr osc address string pointer - "/ard/aaa"
     //_func callback function pointer

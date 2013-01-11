@@ -38,6 +38,7 @@ public:
     OSCClient(WiFly* wiFly);
     ~OSCClient(void);
     int send(OSCMessage *_message);
+	int sendInt(int content, char* adress);
 
 };
 
