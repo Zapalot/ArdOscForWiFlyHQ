@@ -21,9 +21,9 @@ extern "C" {
 #include <inttypes.h>
 }
 
-#define kMaxAugument	48
+#define kMaxAugument	8
 #define kMaxRecieveData	100
-#define kMaxOSCAdrCharactor	255
+#define kMaxOSCAdrCharactor	64
 
 #define CULC_ALIGNMENT(x) (x+4)&0xfffc
 
