@@ -14,9 +14,12 @@
 #include <ArdOSCForWiFlyHQ.h>
 
 //uncomment this to use a software serial if you dont own a MEGA
-//#include <SoftwareSerial.h>
-//SoftwareSerial softSerial(softSerialRx,softSerialTx);
+#include <SoftwareSerial.h>
+int wiflyTxPin=10; // the pin that sends data to the Wifly
+int wiflyRxPin=11; // the pin that receives data from the the Wifly
 
+SoftwareSerial softSerial(wiflyRxPin,wiflyTxPin); 
+unsigned long receiveTimeout= 15; // adjust to match your Baudrate: Should be around 2-3 with 115200 Baud, higher at lower Baudrates
 WiFly wifly;
 OSCServer server(&wifly);
 
@@ -26,15 +29,15 @@ void setup()
 { 
   Serial.begin(115200);
   //use the convenient setup. Replace <HardwareSerial> by <SoftwareSerial> if you use one.
-  wifly.setupForUDP<HardwareSerial>(
-    &Serial3,   //the serial you want to use (this can also be a software serial)
-    115200, // if you use a hardware serial, I would recommend the full 115200. This does not work with a software serial.
+  wifly.setupForUDP<SoftwareSerial>(
+    &softSerial,   //the serial you want to use (this can also be a software serial)
+    28800,      // if you use a hardware serial, I would recommend the full 115200. 28800 is the maximum that works reliably with a software serial.
     true,	// should we try some other baudrates if the currently selected one fails?
-    "WLAN-466B23",  //Your Wifi Name (SSID)
-    "SP-213B33501", //Your Wifi Password 
-    "WiFly",                 // Device name for identification in the network
-    "192.168.2.201",         // IP Adress of the Wifly. if 0 (without quotes), it will use dhcp to get an ip
-    8000,                    // WiFly receive port
+    "wally",    //Your Wifi Name (SSID)
+    "robomint", //Your Wifi Password 
+    "WiFly",    // Device name for identification in the network
+    0,          // IP Adress of the Wifly. if 0 (without quotes), it will use dhcp to get an ip
+    8000,                   // WiFly receive port
     "255.255.255.255",       // Where to send outgoing Osc messages. "255.255.255.255" will send to all hosts in the subnet
     8001,                     // outgoing port
     true	// show debug information on Serial
@@ -43,23 +46,23 @@ void setup()
 
   pinMode(ledPin,OUTPUT); //prepare to fade th einternal LED by OSC
    // Register a callback fuction of the LED fading.
-   // When a message is with the adress "/ard/ledFade" is received, "setLedFade" will be invoked.
+   // When a message is with the adress string "/ard/ledFade" is received, the function "setLedFade" will be invoked.
    server.addCallback("/ard/ledFade",&setLedFade);
 }
 
 
 void loop()
 {
-	//check for new incoming messages. If a message with a registered adress is recieved, the callback function will be invoked.
-  if(server.availableCheck(2)>0)
+  //check for new incoming messages. If a message with a registered adress is recieved, the callback function (in this case setLedFade()) will be invoked.
+  if(server.availableCheck(15)>0)
   {  
     //debugoutln("alive!"); //callback after process
   }
 }
 
 void setLedFade(OSCMessage *_mes){
-  //get 1st argument(int32) and use it to fade the LED
-  int fadeValue=_mes->getArgInt32(0);
+  //get 1st argument(int32) and use it to fade the LED. Other Argument types are getArgFloat or getArgString
+  int fadeValue=_mes->getArgInt32(0); // the '->' allows access to functions of the message that was passsed as a pointer (*). 
   Serial.println(fadeValue);
   analogWrite(ledPin,fadeValue );
 }
